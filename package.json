@@ -22,7 +22,7 @@
   "targets": {
     "default": {
       "distDir": "./output",
-      "publicUrl": "/p5-gallery-starter/"
+      "publicUrl": "/plants/"
     }
   },
   "browserlist": [
