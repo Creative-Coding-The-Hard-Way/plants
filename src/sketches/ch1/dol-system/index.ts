@@ -1,46 +1,118 @@
 import { Page } from "~/src/lib/page";
 import P5 from "p5";
 
-type Rules = Map<string, string>;
+interface Rules {
+  readonly [predecessor: string]: string;
+}
 
-function DOL(axiom: string, rules: Rules): string {
-  let result = "";
-  for (let i = 0; i < axiom.length; i++) {
-    const c = axiom[i];
-    result += rules.get(c);
+class DOL {
+  private rules: Rules;
+
+  constructor(rules: Rules) {
+    this.rules = rules;
   }
-  return result;
+
+  public produce(axiom: string, steps: number): string {
+    let result = axiom;
+    for (let i = 0; i < steps; i++) {
+      result = this.produce_step(result);
+    }
+    return result;
+  }
+
+  private produce_step(axiom: string): string {
+    let result = "";
+    for (let i = 0; i < axiom.length; i++) {
+      const c = axiom[i];
+      result += this.rules[c];
+    }
+    return result;
+  }
 }
 
 function sketch(p5: P5) {
   const w = 800;
   const h = 600;
 
+  const bw = w / 25;
+  const bh = h / 10;
+
   const axiom = "R";
-  const rules = new Map();
-  rules.set("R", "LS");
-  rules.set("L", "MR");
-  rules.set("S", "R");
-  rules.set("M", "L");
+  const dol = new DOL({
+    R: "LS",
+    L: "MR",
+    S: "R",
+    M: "L",
+  });
 
-  const a2 = DOL(axiom, rules);
-  const a3 = DOL(a2, rules);
-  const a4 = DOL(a3, rules);
-  const a5 = DOL(a4, rules);
+  function R(x: number, y: number): number {
+    p5.fill("grey");
+    p5.rect(x, y, bw * 2, bh);
+    return bw * 2;
+  }
 
-  console.log(axiom);
-  console.log(a2);
-  console.log(a3);
-  console.log(a4);
-  console.log(a5);
+  function S(x: number, y: number): number {
+    p5.fill("grey");
+    p5.rect(x, y, bw, bh);
+    return bw;
+  }
+
+  function L(x: number, y: number): number {
+    p5.fill("white");
+    p5.rect(x, y, bw * 2, bh);
+    return bw * 2;
+  }
+
+  function M(x: number, y: number): number {
+    p5.fill("white");
+    p5.rect(x, y, bw, bh);
+    return bw;
+  }
+
+  function draw_axiom(axiom: string, x: number, y: number) {
+    for (const c of axiom) {
+      if (x >= w || y >= h) {
+        return;
+      }
+      switch (c) {
+        case "R": {
+          x += R(x, y);
+          break;
+        }
+        case "S": {
+          x += S(x, y);
+          break;
+        }
+        case "L": {
+          x += L(x, y);
+          break;
+        }
+        case "M": {
+          x += M(x, y);
+          break;
+        }
+      }
+    }
+  }
 
   p5.setup = () => {
     p5.createCanvas(w, h);
     p5.colorMode(p5.HSL);
+    p5.background(128);
   };
 
+  let c = 0;
+  let t = 1000;
   p5.draw = () => {
-    p5.background(128);
+    if (p5.millis() > t) {
+      t = p5.millis() + 1000;
+      c += 1;
+      if (c > 10) {
+        p5.background(128);
+        c = 0;
+      }
+    }
+    draw_axiom(dol.produce(axiom, c), 0, c * bh);
   };
 }
 new Page("DOL-Systems", sketch);
