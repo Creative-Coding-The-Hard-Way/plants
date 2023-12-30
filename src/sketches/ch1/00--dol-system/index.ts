@@ -1,5 +1,6 @@
 import { Page } from "~/src/lib/page";
 import P5 from "p5";
+import * as palette from "~/src/lib/palette";
 
 interface Rules {
   readonly [predecessor: string]: string;
@@ -31,11 +32,16 @@ class DOL {
 }
 
 function sketch(p5: P5) {
-  const w = 800;
-  const h = 600;
+  let w: number, h: number, bw: number, bh: number;
+  p5.windowResized = () => {
+    w = window.innerWidth * 0.75;
+    h = window.innerHeight * 0.75;
 
-  const bw = w / 25;
-  const bh = h / 10;
+    bw = w / 25;
+    bh = h / 10;
+    p5.resizeCanvas(w, h, false);
+    p5.background(palette.antique_white(p5));
+  };
 
   const axiom = "R";
   const dol = new DOL({
@@ -99,6 +105,7 @@ function sketch(p5: P5) {
     p5.createCanvas(w, h);
     p5.colorMode(p5.HSL);
     p5.background(128);
+    p5.windowResized();
   };
 
   let c = 0;
@@ -116,5 +123,3 @@ function sketch(p5: P5) {
   };
 }
 new Page("DOL-Systems", sketch);
-
-export {};
