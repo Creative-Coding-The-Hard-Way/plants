@@ -61,7 +61,8 @@ module.exports = async () => {
         sketch_folder
       );
       return {
-        name: sketch_folder,
+        name: encodeURI(sketch_folder),
+        display_name: sketch_folder.replaceAll("-", " "),
         category: category_folder,
         source: path.join(full_sketch_folder_path, source),
         screenshot:
