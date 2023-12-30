@@ -6,8 +6,8 @@ import { LSystem } from "./lsystem";
 import { interpret } from "./grapheme";
 
 function sketch(p5: P5) {
-  const w = window.innerWidth * 0.75;
-  const h = window.innerHeight * 0.75;
+  let w = 100;
+  let h = 100;
 
   let system_count = 0;
   let system_index = 0;
@@ -66,8 +66,15 @@ function sketch(p5: P5) {
   let axiom_index = 0;
   let previous_axiom_index = 0;
 
+  p5.windowResized = () => {
+    w = Math.round(window.innerWidth * 0.75);
+    h = Math.round(window.innerHeight * 0.75);
+    p5.resizeCanvas(w, h);
+  };
+
   p5.setup = () => {
     p5.createCanvas(w, h);
+    p5.windowResized();
   };
 
   p5.draw = () => {
@@ -99,6 +106,8 @@ function sketch(p5: P5) {
     }
 
     p5.background(palette.antique_white(p5));
+    p5.stroke(palette.gunmetal(p5));
+    p5.strokeWeight(Math.min(w, h) / 400);
 
     const [tx, ty] = systems[system_index].offset(w, h);
     let turtle = new Turtle(p5).move_to(tx, ty);
