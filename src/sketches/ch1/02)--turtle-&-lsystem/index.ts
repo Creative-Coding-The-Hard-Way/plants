@@ -31,7 +31,6 @@ function sketch(p5: P5) {
     p5.background(palette.antique_white(p5));
 
     const turtle = new Turtle(p5).move_to(w / 3, (3 * h) / 4);
-
     const distance = (w / 3) * Math.pow(1 / 4, count);
     const theta = p5.HALF_PI;
 
